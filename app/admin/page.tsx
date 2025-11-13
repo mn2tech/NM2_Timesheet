@@ -12,6 +12,7 @@ interface User {
   email: string;
   name: string;
   role: string;
+  createdAt: string;
 }
 
 interface TimeEntry {
