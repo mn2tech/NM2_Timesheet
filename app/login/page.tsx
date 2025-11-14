@@ -24,20 +24,32 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        let errorMessage = 'Login failed';
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          errorMessage = `Server error: ${res.status} ${res.statusText}`;
+        }
+        setError(errorMessage);
         setLoading(false);
         return;
       }
+
+      const data = await res.json();
 
       // Set cookie and redirect
       document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/dashboard');
     } catch (err) {
       console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : err instanceof TypeError && err.message.includes('fetch')
+        ? 'Network error: Unable to connect to server. Please check your connection.'
+        : 'An error occurred. Please try again.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
