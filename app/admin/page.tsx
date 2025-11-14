@@ -66,15 +66,24 @@ export default function AdminPage() {
         return;
       }
 
+      // Parse responses properly (each response can only be read once)
       const userData = await userRes.json();
       const usersData = await usersRes.json() as { users: User[] };
       const entriesData = await entriesRes.json();
+
+      if (!userData.user) {
+        console.error('No user data received');
+        router.push('/login');
+        return;
+      }
 
       setUser(userData.user);
       setUsers(usersData.users || []);
       setEntries(entriesData.entries || []);
     } catch (error) {
       console.error('Error loading data:', error);
+      // Show error message to user
+      alert(`Failed to load data: ${error instanceof Error ? error.message : 'Unknown error'}. Please refresh the page.`);
     } finally {
       setLoading(false);
     }
@@ -113,6 +122,32 @@ export default function AdminPage() {
       alert('An error occurred. Please try again.');
     } finally {
       setAddingUser(false);
+    }
+  };
+
+  const handleDeleteTimeEntry = async (entryId: string) => {
+    if (!confirm('Are you sure you want to delete this time entry?')) {
+      return;
+    }
+
+    try {
+      const basePath = '/nm2timesheet';
+      const res = await fetch(`${basePath}/api/admin/time-entries/${entryId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Failed to delete time entry');
+        return;
+      }
+
+      alert('Time entry deleted successfully');
+      loadData(); // Reload data to refresh the list
+    } catch (error) {
+      console.error('Error deleting time entry:', error);
+      alert('An error occurred. Please try again.');
     }
   };
 
@@ -285,12 +320,15 @@ export default function AdminPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Description
                     </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {entries.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                         No time entries found
                       </td>
                     </tr>
@@ -321,6 +359,15 @@ export default function AdminPage() {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {entry.description || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => handleDeleteTimeEntry(entry.id)}
+                              className="text-red-600 hover:text-red-900 transition-colors"
+                              title="Delete entry"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </td>
                         </tr>
                       ))

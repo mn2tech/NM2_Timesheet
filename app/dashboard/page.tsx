@@ -47,10 +47,11 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     try {
+      const basePath = '/nm2timesheet';
       const [userRes, entriesRes, projectsRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/time-entries'),
-        fetch('/api/projects'),
+        fetch(`${basePath}/api/auth/me`),
+        fetch(`${basePath}/api/time-entries`),
+        fetch(`${basePath}/api/projects`),
       ]);
 
       if (userRes.status === 401) {
@@ -92,9 +93,10 @@ export default function DashboardPage() {
     e.preventDefault();
     
     try {
+      const basePath = '/nm2timesheet';
       const url = editingEntry 
-        ? `/api/time-entries/${editingEntry.id}`
-        : '/api/time-entries';
+        ? `${basePath}/api/time-entries/${editingEntry.id}`
+        : `${basePath}/api/time-entries`;
       
       const method = editingEntry ? 'PUT' : 'POST';
       
@@ -140,7 +142,8 @@ export default function DashboardPage() {
     if (!confirm('Are you sure you want to delete this entry?')) return;
 
     try {
-      const res = await fetch(`/api/time-entries/${id}`, {
+      const basePath = '/nm2timesheet';
+      const res = await fetch(`${basePath}/api/time-entries/${id}`, {
         method: 'DELETE',
       });
 

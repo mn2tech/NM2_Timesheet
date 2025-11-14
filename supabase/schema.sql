@@ -35,9 +35,11 @@ CREATE INDEX IF NOT EXISTS idx_timesheet_time_entries_user_id ON timesheet_time_
 CREATE INDEX IF NOT EXISTS idx_timesheet_time_entries_date ON timesheet_time_entries(date);
 CREATE INDEX IF NOT EXISTS idx_timesheet_users_email ON timesheet_users(email);
 
--- Insert default project
+-- Insert default projects
 INSERT INTO timesheet_projects (id, name, description, created_at)
-VALUES ('1', 'General', 'General work hours', NOW())
+VALUES 
+  ('1', 'General', 'General work hours', NOW()),
+  ('2', 'Onyx Government Services TTB', 'Supporting SAS Analytics', NOW())
 ON CONFLICT (id) DO NOTHING;
 
 
