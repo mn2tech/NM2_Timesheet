@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import NM2TechLogo from '@/components/NM2TechLogo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,7 +66,10 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <div className="text-center mb-8">
-          <p className="text-gray-600">Sign in to your account</p>
+          <div className="flex justify-center mb-4">
+            <NM2TechLogo size="lg" />
+          </div>
+          <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
         {error && (
