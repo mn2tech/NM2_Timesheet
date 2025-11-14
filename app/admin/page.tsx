@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
-import { LogOut, Users, Clock, TrendingUp, ArrowLeft, Trash2 } from 'lucide-react';
+import { LogOut, Users, Clock, TrendingUp, ArrowLeft, Trash2, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 
@@ -34,6 +34,14 @@ export default function AdminPage() {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'entries' | 'users'>('entries');
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'employee' as 'employee' | 'contractor' | 'admin',
+  });
+  const [addingUser, setAddingUser] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -41,10 +49,11 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
+      const basePath = '/nm2timesheet';
       const [userRes, usersRes, entriesRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/admin/users'),
-        fetch('/api/admin/time-entries'),
+        fetch(`${basePath}/api/auth/me`),
+        fetch(`${basePath}/api/admin/users`),
+        fetch(`${basePath}/api/admin/time-entries`),
       ]);
 
       if (userRes.status === 401) {
@@ -76,13 +85,45 @@ export default function AdminPage() {
     router.push('/');
   };
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddingUser(true);
+
+    try {
+      const basePath = '/nm2timesheet';
+      const res = await fetch(`${basePath}/api/admin/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Failed to create user');
+        return;
+      }
+
+      alert(data.message || 'User created successfully');
+      setShowAddUser(false);
+      setNewUser({ name: '', email: '', password: '', role: 'employee' });
+      loadData(); // Reload data to refresh the list
+    } catch (error) {
+      console.error('Error creating user:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setAddingUser(false);
+    }
+  };
+
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (!confirm(`Are you sure you want to delete user "${userName}"? This will also delete all their time entries. This action cannot be undone.`)) {
       return;
     }
 
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const basePath = '/nm2timesheet';
+      const res = await fetch(`${basePath}/api/admin/users/${userId}`, {
         method: 'DELETE',
       });
 
@@ -292,6 +333,16 @@ export default function AdminPage() {
 
         {activeTab === 'users' && (
           <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-medium text-gray-900">Users</h3>
+              <button
+                onClick={() => setShowAddUser(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add User</span>
+              </button>
+            </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -377,6 +428,105 @@ export default function AdminPage() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Add User Modal */}
+        {showAddUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Add New User</h3>
+                <button
+                  onClick={() => {
+                    setShowAddUser(false);
+                    setNewUser({ name: '', email: '', password: '', role: 'employee' });
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <form onSubmit={handleAddUser} className="px-6 py-4 space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={newUser.name}
+                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Minimum 6 characters"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                    Role
+                  </label>
+                  <select
+                    id="role"
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value as 'employee' | 'contractor' | 'admin' })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  >
+                    <option value="employee">Employee</option>
+                    <option value="contractor">Contractor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddUser(false);
+                      setNewUser({ name: '', email: '', password: '', role: 'employee' });
+                    }}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addingUser}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {addingUser ? 'Adding...' : 'Add User'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
