@@ -54,6 +54,9 @@ export default function Home() {
           <p className="text-sm text-gray-500 text-center">
             For employees and contractors of NM2TECH LLC
           </p>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Designed by nm2tech - mAIchael
+          </p>
         </div>
       </div>
     </div>

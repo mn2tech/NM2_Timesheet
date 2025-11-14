@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
 import { LogOut, Users, Clock, TrendingUp, ArrowLeft, Trash2, Plus, X } from 'lucide-react';
 import Link from 'next/link';
-import Logo from '@/components/Logo';
+import NM2TechLogo from '@/components/NM2TechLogo';
 
 interface User {
   id: string;
@@ -173,7 +173,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div>
-              <Logo size="sm" showTagline={false} />
+              <NM2TechLogo size="sm" />
               <p className="text-xs text-gray-500 mt-1">Admin Dashboard</p>
             </div>
             <div className="flex items-center space-x-4">
@@ -531,6 +531,11 @@ export default function AdminPage() {
           </div>
         )}
       </main>
+      <footer className="bg-white border-t border-gray-200 py-4 mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-xs text-gray-500">Designed by nm2tech - mAIchael</p>
+        </div>
+      </footer>
     </div>
   );
 }

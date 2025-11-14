@@ -136,6 +136,9 @@ export default function LoginPage() {
             ← Back to home
           </Link>
         </div>
+        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-500">Designed by nm2tech - mAIchael</p>
+        </div>
       </div>
     </div>
   );

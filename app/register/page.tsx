@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Logo from '@/components/Logo';
+import NM2TechLogo from '@/components/NM2TechLogo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function RegisterPage() {
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Logo size="lg" />
+            <NM2TechLogo size="lg" />
           </div>
           <p className="text-gray-600">Create your account</p>
         </div>
@@ -161,6 +161,9 @@ export default function RegisterPage() {
           <Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">
             ← Back to home
           </Link>
+        </div>
+        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-500">Designed by nm2tech - mAIchael</p>
         </div>
       </div>
     </div>

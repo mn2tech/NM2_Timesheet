@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import Logo from '@/components/Logo';
+import NM2TechLogo from '@/components/NM2TechLogo';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -138,7 +138,7 @@ function ResetPasswordForm() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <Logo size="md" />
+            <NM2TechLogo size="md" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Reset your password
@@ -209,6 +209,9 @@ function ResetPasswordForm() {
             </Link>
           </div>
         </form>
+        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-500">Designed by nm2tech - mAIchael</p>
+        </div>
       </div>
     </div>
   );
