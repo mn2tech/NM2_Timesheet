@@ -45,12 +45,19 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err) {
       // More specific error handling
-      const errorMessage = err instanceof Error 
-        ? `Network error: ${err.message}` 
-        : 'An error occurred. Please try again.';
+      console.error('Login error:', err);
+      let errorMessage = 'An error occurred. Please try again.';
+      
+      if (err instanceof Error) {
+        errorMessage = `Network error: ${err.message}`;
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        errorMessage = `Error: ${String(err.message)}`;
+      } else if (err) {
+        errorMessage = `Error: ${String(err)}`;
+      }
+      
       setError(errorMessage);
       setLoading(false);
-      console.error('Login error:', err);
     }
   };
 

@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db-wrapper';
 import { verifyPassword, generateToken } from '@/lib/auth';
 
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
