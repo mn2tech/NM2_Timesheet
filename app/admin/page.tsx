@@ -12,6 +12,7 @@ interface User {
   email: string;
   name: string;
   role: string;
+  createdAt?: string;
 }
 
 interface TimeEntry {
@@ -57,7 +58,7 @@ export default function AdminPage() {
       }
 
       const userData = await userRes.json();
-      const usersData = await usersRes.json();
+      const usersData = await usersRes.json() as { users: User[] };
       const entriesData = await entriesRes.json();
 
       setUser(userData.user);
@@ -326,7 +327,7 @@ export default function AdminPage() {
                       </td>
                     </tr>
                   ) : (
-                    users.map((u) => {
+                    users.map((u: User) => {
                       const userStats = entriesByUser[u.id] || { name: u.name, hours: 0, entries: 0 };
                       return (
                         <tr key={u.id} className="hover:bg-gray-50">
@@ -354,7 +355,7 @@ export default function AdminPage() {
                             {userStats.entries}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {format(parseISO(u.createdAt), 'MMM dd, yyyy')}
+                            {u.createdAt ? format(parseISO(u.createdAt as string), 'MMM dd, yyyy') : 'N/A'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             {u.id !== user?.id && (

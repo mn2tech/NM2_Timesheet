@@ -4,9 +4,9 @@
   "description": "Timesheet application for NM2TECH LLC",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 0.0.0.0",
     "lint": "next lint",
     "create-admin": "node scripts/create-admin.js",
     "migrate": "tsx scripts/migrate-to-supabase.ts",
