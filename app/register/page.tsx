@@ -39,7 +39,8 @@ export default function RegisterPage() {
       document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      console.error('Registration error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
       setLoading(false);
     }
   };

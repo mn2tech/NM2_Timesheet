@@ -78,6 +78,8 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      // Show error to user
+      alert(error instanceof Error ? error.message : 'Failed to load data. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -121,7 +123,7 @@ export default function DashboardPage() {
       loadData();
     } catch (error) {
       console.error('Error saving entry:', error);
-      alert('An error occurred. Please try again.');
+      alert(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     }
   };
 
@@ -152,7 +154,7 @@ export default function DashboardPage() {
       loadData();
     } catch (error) {
       console.error('Error deleting entry:', error);
-      alert('An error occurred. Please try again.');
+      alert(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     }
   };
 
