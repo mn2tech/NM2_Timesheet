@@ -24,7 +24,15 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        // If response is not JSON, show a more helpful error
+        setError(`Server error: ${res.status} ${res.statusText}. Please try again.`);
+        setLoading(false);
+        return;
+      }
 
       if (!res.ok) {
         setError(data.error || 'Login failed');
@@ -36,8 +44,13 @@ export default function LoginPage() {
       document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      // More specific error handling
+      const errorMessage = err instanceof Error 
+        ? `Network error: ${err.message}` 
+        : 'An error occurred. Please try again.';
+      setError(errorMessage);
       setLoading(false);
+      console.error('Login error:', err);
     }
   };
 
