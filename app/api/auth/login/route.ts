@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db-wrapper';
 import { verifyPassword, generateToken } from '@/lib/auth';
 
+// Handle CORS preflight
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
@@ -9,7 +21,14 @@ export async function POST(req: NextRequest) {
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
@@ -17,7 +36,14 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
-        { status: 401 }
+        { 
+          status: 401,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
@@ -25,7 +51,14 @@ export async function POST(req: NextRequest) {
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
-        { status: 401 }
+        { 
+          status: 401,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
       );
     }
 
@@ -39,12 +72,25 @@ export async function POST(req: NextRequest) {
         name: user.name,
         role: user.role,
       },
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
     });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      }
     );
   }
 }
