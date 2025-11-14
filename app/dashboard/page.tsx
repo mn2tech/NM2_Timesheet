@@ -180,8 +180,10 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
+                <p className="text-xs font-semibold text-primary-600 capitalize">
+                  {user?.role ? user.role : 'No role'}
+                </p>
               </div>
               <button
                 onClick={handleLogout}
