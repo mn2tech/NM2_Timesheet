@@ -67,8 +67,24 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Registration error:', error);
+    // Return more specific error message in development
+    let errorMessage = 'Internal server error';
+    if (process.env.NODE_ENV === 'development') {
+      if (error instanceof Error) {
+        errorMessage = `Internal server error: ${error.message}`;
+      } else if (error && typeof error === 'object') {
+        // Try to stringify the error object properly
+        try {
+          errorMessage = `Internal server error: ${JSON.stringify(error, null, 2)}`;
+        } catch {
+          errorMessage = `Internal server error: ${String(error)}`;
+        }
+      } else {
+        errorMessage = `Internal server error: ${String(error)}`;
+      }
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

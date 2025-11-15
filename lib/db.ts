@@ -82,7 +82,12 @@ function readDB(): Database {
 
 function writeDB(db: Database): void {
   ensureDataDir();
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8');
+  } catch (error) {
+    console.error('Failed to write database file:', error);
+    throw new Error(`Database write failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 export const db = {

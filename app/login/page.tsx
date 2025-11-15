@@ -18,8 +18,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Use basePath explicitly for API routes (matches next.config.js)
-      const res = await fetch('/nm2timesheet/api/auth/login', {
+      // API route - Next.js will handle basePath automatically
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

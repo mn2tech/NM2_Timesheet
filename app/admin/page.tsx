@@ -49,11 +49,11 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const basePath = '/nm2timesheet';
+      // API routes - Next.js will handle basePath automatically
       const [userRes, usersRes, entriesRes] = await Promise.all([
-        fetch(`${basePath}/api/auth/me`),
-        fetch(`${basePath}/api/admin/users`),
-        fetch(`${basePath}/api/admin/time-entries`),
+        fetch('/api/auth/me'),
+        fetch('/api/admin/users'),
+        fetch('/api/admin/time-entries'),
       ]);
 
       if (userRes.status === 401) {
@@ -99,8 +99,7 @@ export default function AdminPage() {
     setAddingUser(true);
 
     try {
-      const basePath = '/nm2timesheet';
-      const res = await fetch(`${basePath}/api/admin/users`, {
+      const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
@@ -131,8 +130,7 @@ export default function AdminPage() {
     }
 
     try {
-      const basePath = '/nm2timesheet';
-      const res = await fetch(`${basePath}/api/admin/time-entries/${entryId}`, {
+      const res = await fetch(`/api/admin/time-entries/${entryId}`, {
         method: 'DELETE',
       });
 
@@ -157,8 +155,7 @@ export default function AdminPage() {
     }
 
     try {
-      const basePath = '/nm2timesheet';
-      const res = await fetch(`${basePath}/api/admin/users/${userId}`, {
+      const res = await fetch(`/api/admin/users/${userId}`, {
         method: 'DELETE',
       });
 

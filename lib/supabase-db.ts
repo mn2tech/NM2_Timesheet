@@ -70,9 +70,12 @@ export const supabaseDb = {
     },
     create: async (user: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
       const client = ensureSupabase();
+      // Generate ID (using timestamp like JSON version for consistency)
+      const id = Date.now().toString();
       const { data, error } = await client
         .from('timesheet_users')
         .insert({
+          id: id,
           email: user.email,
           name: user.name,
           password: user.password,
@@ -148,9 +151,12 @@ export const supabaseDb = {
     },
     create: async (entry: Omit<TimeEntry, 'id' | 'createdAt'>): Promise<TimeEntry> => {
       const client = ensureSupabase();
+      // Generate ID (using timestamp like JSON version for consistency)
+      const id = Date.now().toString();
       const { data, error } = await client
         .from('timesheet_time_entries')
         .insert({
+          id: id,
           user_id: entry.userId,
           date: entry.date,
           hours: entry.hours,
@@ -225,11 +231,14 @@ export const supabaseDb = {
     },
     create: async (project: Omit<Project, 'id' | 'createdAt'>): Promise<Project> => {
       const client = ensureSupabase();
+      // Generate ID (using timestamp like JSON version for consistency)
+      const id = Date.now().toString();
       const { data, error } = await client
         .from('timesheet_projects')
         .insert({
+          id: id,
           name: project.name,
-          description: project.description,
+          description: project.description || null,
         })
         .select()
         .single();

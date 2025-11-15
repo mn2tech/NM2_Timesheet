@@ -25,7 +25,15 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        // If response is not JSON, show a more helpful error
+        setError(`Server error: ${res.status} ${res.statusText}. Please try again.`);
+        setLoading(false);
+        return;
+      }
 
       if (!res.ok) {
         setError(data.error || 'Failed to send reset email');
@@ -33,9 +41,23 @@ export default function ForgotPasswordPage() {
         return;
       }
 
+      // Success - show success message
       setSuccess(true);
+      setLoading(false);
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      // More specific error handling
+      console.error('Forgot password error:', err);
+      let errorMessage = 'An error occurred. Please try again.';
+      
+      if (err instanceof Error) {
+        errorMessage = `Network error: ${err.message}`;
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        errorMessage = `Error: ${String(err.message)}`;
+      } else if (err) {
+        errorMessage = `Error: ${String(err)}`;
+      }
+      
+      setError(errorMessage);
       setLoading(false);
     }
   };

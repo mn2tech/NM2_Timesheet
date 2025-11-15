@@ -5,6 +5,8 @@ import { sendEmail, generatePasswordResetEmail } from '@/lib/email';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+// Get basePath from next.config.js (defaults to empty for local dev)
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,8 +36,8 @@ export async function POST(req: NextRequest) {
         { expiresIn: '1h' }
       );
 
-      // Create reset link
-      const resetLink = `${BASE_URL}/reset-password?token=${resetToken}`;
+      // Create reset link (include basePath if set)
+      const resetLink = `${BASE_URL}${BASE_PATH}/reset-password?token=${resetToken}`;
 
       // Send email with reset link
       const emailOptions = generatePasswordResetEmail(resetLink, user.name);
