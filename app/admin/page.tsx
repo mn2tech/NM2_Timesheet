@@ -37,8 +37,11 @@ export default function AdminPage() {
   
   // Helper to get basePath
   const getBasePath = () => {
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')) {
-      return '/nm2timesheet';
+    if (typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/nm2timesheet')) {
+        return '/nm2timesheet';
+      }
     }
     return '';
   };

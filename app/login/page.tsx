@@ -18,13 +18,22 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Get basePath from current location
-      const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet') 
-        ? '/nm2timesheet' 
-        : '';
+      // Get basePath from current location - use absolute URL to ensure correct path
+      let apiUrl = '/api/auth/login';
+      if (typeof window !== 'undefined') {
+        const pathname = window.location.pathname;
+        const href = window.location.href;
+        // Check both pathname and href to be sure
+        if (pathname.startsWith('/nm2timesheet') || href.includes('/nm2timesheet')) {
+          apiUrl = '/nm2timesheet/api/auth/login';
+          console.log('Using basePath /nm2timesheet for API call:', apiUrl);
+        } else {
+          console.log('No basePath detected. Pathname:', pathname, 'Href:', href);
+        }
+      }
       
       // API route - include basePath if in production
-      const res = await fetch(`${basePath}/api/auth/login`, {
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

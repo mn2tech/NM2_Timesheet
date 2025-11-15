@@ -45,11 +45,15 @@ function ResetPasswordForm() {
 
     try {
       // Get basePath from current location
-      const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet') 
-        ? '/nm2timesheet' 
-        : '';
+      let apiUrl = '/api/auth/reset-password';
+      if (typeof window !== 'undefined') {
+        const pathname = window.location.pathname;
+        if (pathname.startsWith('/nm2timesheet')) {
+          apiUrl = '/nm2timesheet/api/auth/reset-password';
+        }
+      }
       
-      const res = await fetch(`${basePath}/api/auth/reset-password`, {
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),

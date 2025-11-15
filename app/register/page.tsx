@@ -22,11 +22,15 @@ export default function RegisterPage() {
 
     try {
       // Get basePath from current location
-      const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet') 
-        ? '/nm2timesheet' 
-        : '';
+      let apiUrl = '/api/auth/register';
+      if (typeof window !== 'undefined') {
+        const pathname = window.location.pathname;
+        if (pathname.startsWith('/nm2timesheet')) {
+          apiUrl = '/nm2timesheet/api/auth/register';
+        }
+      }
       
-      const res = await fetch(`${basePath}/api/auth/register`, {
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role, adminCode: role === 'admin' ? adminCode : undefined }),
