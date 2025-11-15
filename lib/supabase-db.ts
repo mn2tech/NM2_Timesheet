@@ -30,6 +30,7 @@ function rowToTimeEntry(row: any): TimeEntry {
     hours: parseFloat(row.hours),
     project: row.project,
     description: row.description || '',
+    status: row.status || 'draft', // Default to 'draft' if not set
     createdAt: row.created_at,
   };
 }
@@ -150,31 +151,52 @@ export const supabaseDb = {
       return rowToTimeEntry(data);
     },
     create: async (entry: Omit<TimeEntry, 'id' | 'createdAt'>): Promise<TimeEntry> => {
-      const client = ensureSupabase();
-      // Generate ID (using timestamp like JSON version for consistency)
-      const id = Date.now().toString();
-      const { data, error } = await client
-        .from('timesheet_time_entries')
-        .insert({
-          id: id,
-          user_id: entry.userId,
-          date: entry.date,
-          hours: entry.hours,
-          project: entry.project,
-          description: entry.description,
-        })
-        .select()
-        .single();
+      try {
+        const client = ensureSupabase();
+        // Generate ID (using timestamp like JSON version for consistency)
+        const id = Date.now().toString();
+        const { data, error } = await client
+          .from('timesheet_time_entries')
+          .insert({
+            id: id,
+            user_id: entry.userId,
+            date: entry.date,
+            hours: entry.hours,
+            project: entry.project,
+            description: entry.description,
+            status: entry.status || 'draft', // Default to 'draft' if not set
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      return rowToTimeEntry(data);
+        if (error) {
+          console.error('Supabase create error:', error);
+          console.error('Entry data:', entry);
+          throw new Error(`Supabase error: ${error.message || JSON.stringify(error)}`);
+        }
+        
+        if (!data) {
+          throw new Error('No data returned from Supabase create');
+        }
+        
+        return rowToTimeEntry(data);
+      } catch (error) {
+        console.error('Error creating entry in Supabase:', error);
+        console.error('Entry data:', entry);
+        throw error;
+      }
     },
     update: async (id: string, updates: Partial<TimeEntry>): Promise<TimeEntry | null> => {
       const updateData: any = {};
       if (updates.date) updateData.date = updates.date;
-      if (updates.hours !== undefined) updateData.hours = updates.hours;
+      // Explicitly handle 0 hours - use !== undefined to include 0
+      if (updates.hours !== undefined) {
+        updateData.hours = updates.hours; // This will include 0
+      }
       if (updates.project) updateData.project = updates.project;
       if (updates.description !== undefined) updateData.description = updates.description;
+      // Always update status if provided (even if it's an empty string, we want to allow setting it)
+      if (updates.status !== undefined) updateData.status = updates.status;
 
       const client = ensureSupabase();
       const { data, error } = await client
@@ -184,7 +206,15 @@ export const supabaseDb = {
         .select()
         .single();
 
-      if (error || !data) return null;
+      if (error) {
+        console.error('Supabase update error:', error, 'Update data:', updateData);
+        return null;
+      }
+      if (!data) {
+        console.error('No data returned from Supabase update for id:', id);
+        return null;
+      }
+      
       return rowToTimeEntry(data);
     },
     delete: async (id: string): Promise<boolean> => {
@@ -245,6 +275,36 @@ export const supabaseDb = {
 
       if (error) throw error;
       return rowToProject(data);
+    },
+  },
+  userLogins: {
+    create: async (userId: string, email: string, ipAddress?: string, userAgent?: string): Promise<void> => {
+      const client = ensureSupabase();
+      const { error } = await client
+        .from('timesheet_user_logins')
+        .insert({
+          user_id: userId,
+          email: email,
+          ip_address: ipAddress || null,
+          user_agent: userAgent || null,
+        });
+
+      if (error) {
+        console.error('Error logging user login:', error);
+        // Don't throw - login tracking failure shouldn't break the login process
+      }
+    },
+    findByUserId: async (userId: string, limit: number = 50): Promise<any[]> => {
+      const client = ensureSupabase();
+      const { data, error } = await client
+        .from('timesheet_user_logins')
+        .select('*')
+        .eq('user_id', userId)
+        .order('login_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data || [];
     },
   },
 };

@@ -40,6 +40,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Log the user login as a row entry
+    try {
+      const ipAddress = req.headers.get('x-forwarded-for') || 
+                       req.headers.get('x-real-ip') || 
+                       'unknown';
+      const userAgent = req.headers.get('user-agent') || 'unknown';
+      await db.userLogins.create(user.id, user.email, ipAddress, userAgent);
+    } catch (error) {
+      // Don't fail login if logging fails
+      console.error('Failed to log user login:', error);
+    }
+
     const token = generateToken(user);
 
     return NextResponse.json({

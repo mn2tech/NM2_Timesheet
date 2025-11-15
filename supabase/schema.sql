@@ -24,9 +24,10 @@ CREATE TABLE IF NOT EXISTS timesheet_time_entries (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES timesheet_users(id) ON DELETE CASCADE,
   date DATE NOT NULL,
-  hours DECIMAL(5,2) NOT NULL CHECK (hours > 0 AND hours <= 24),
+  hours DECIMAL(5,2) NOT NULL CHECK (hours >= 0 AND hours <= 24),
   project TEXT NOT NULL,
   description TEXT,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'submitted', 'approved', 'rejected')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

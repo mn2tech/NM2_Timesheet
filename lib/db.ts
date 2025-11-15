@@ -17,6 +17,7 @@ export interface TimeEntry {
   hours: number;
   project: string;
   description: string;
+  status: 'draft' | 'submitted' | 'approved' | 'rejected'; // Approval workflow status
   createdAt: string;
 }
 
@@ -130,26 +131,46 @@ export const db = {
     },
     findById: (id: string): TimeEntry | undefined => {
       const db = readDB();
-      return db.timeEntries.find((te) => te.id === id);
+      const idStr = String(id);
+      return db.timeEntries.find((te) => String(te.id) === idStr);
     },
     create: (entry: Omit<TimeEntry, 'id' | 'createdAt'>): TimeEntry => {
-      const db = readDB();
-      const newEntry: TimeEntry = {
-        ...entry,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-      };
-      db.timeEntries.push(newEntry);
-      writeDB(db);
-      return newEntry;
+      try {
+        const db = readDB();
+        const newEntry: TimeEntry = {
+          ...entry,
+          status: entry.status || 'draft', // Default to 'draft' if not set
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+        };
+        db.timeEntries.push(newEntry);
+        writeDB(db);
+        return newEntry;
+      } catch (error) {
+        console.error('Error creating entry in JSON DB:', error);
+        console.error('Entry data:', entry);
+        throw error;
+      }
     },
     update: (id: string, updates: Partial<TimeEntry>): TimeEntry | null => {
       const db = readDB();
-      const index = db.timeEntries.findIndex((te) => te.id === id);
-      if (index === -1) return null;
-      db.timeEntries[index] = { ...db.timeEntries[index], ...updates };
-      writeDB(db);
-      return db.timeEntries[index];
+      // Ensure ID comparison works by converting both to strings
+      const idStr = String(id);
+      const index = db.timeEntries.findIndex((te) => String(te.id) === idStr);
+      if (index === -1) {
+        console.error('Entry not found for update. ID:', idStr, 'Available IDs:', db.timeEntries.map(te => String(te.id)));
+        return null;
+      }
+      
+      const updatedEntry = { ...db.timeEntries[index], ...updates };
+      db.timeEntries[index] = updatedEntry;
+      try {
+        writeDB(db);
+        return updatedEntry;
+      } catch (writeError) {
+        console.error('Failed to write database after update:', writeError);
+        throw writeError;
+      }
     },
     delete: (id: string): boolean => {
       const db = readDB();

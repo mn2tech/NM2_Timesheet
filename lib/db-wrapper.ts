@@ -120,5 +120,20 @@ export const db = {
       return Promise.resolve(dbImplementation.projects.create(project));
     },
   },
+  userLogins: {
+    create: async (userId: string, email: string, ipAddress?: string, userAgent?: string): Promise<void> => {
+      if (useSupabase && dbImplementation.userLogins) {
+        return await dbImplementation.userLogins.create(userId, email, ipAddress, userAgent);
+      }
+      // For JSON storage, we can skip login tracking or implement it later
+      return Promise.resolve();
+    },
+    findByUserId: async (userId: string, limit: number = 50): Promise<any[]> => {
+      if (useSupabase && dbImplementation.userLogins) {
+        return await dbImplementation.userLogins.findByUserId(userId, limit);
+      }
+      return Promise.resolve([]);
+    },
+  },
 };
 
