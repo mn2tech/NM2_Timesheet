@@ -30,7 +30,27 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Mobile optimizations */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Prevent text selection on buttons for better mobile UX */
+  button, .btn {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  /* Better scrolling on mobile */
+  @media (max-width: 640px) {
+    html {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
 }
+
 
 
 

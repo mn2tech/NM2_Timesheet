@@ -978,24 +978,28 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div>
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <div className="flex-1 min-w-0">
               <NM2TechLogo size="sm" />
-              <p className="text-xs text-gray-500 mt-1">Timesheet Dashboard</p>
+              <p className="text-xs text-gray-500 mt-1 hidden sm:block">Timesheet Dashboard</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
+              <div className="text-right sm:hidden">
+                <p className="text-xs font-medium text-gray-900 truncate max-w-[100px]">{user?.name}</p>
+              </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                title="Logout"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -1003,15 +1007,15 @@ export default function DashboardPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Time Entries</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Time Entries</h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 Total hours: <span className="font-semibold">{totalHours.toFixed(2)}</span>
               </p>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={async (e) => {
@@ -1047,10 +1051,10 @@ export default function DashboardPage() {
                   }
                 }}
                 disabled={saving || submitting}
-                className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-2 bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-sm sm:text-base"
                 title={saving ? 'Saving entries...' : submitting ? 'Cannot save while submitting' : 'Save all entries as draft'}
               >
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>{saving ? 'Saving...' : 'Save as Draft'}</span>
               </button>
               {allEntriesSubmitted ? (
@@ -1084,7 +1088,7 @@ export default function DashboardPage() {
                     handleSubmitForApproval();
                   }}
                   disabled={submitting || saving || !hasDraftEntries}
-                  className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center space-x-2 bg-primary-600 text-white px-4 py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-sm sm:text-base"
                   title={(() => {
                     if (submitting) return 'Submitting entries...';
                     if (saving) return 'Cannot submit while saving';
@@ -1117,8 +1121,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow p-4 mb-6">
             <div className="flex items-center space-x-4">
               <Calendar className="w-5 h-5 text-gray-500" />
-              <div className="flex items-center space-x-4">
-                <div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <div className="flex-1">
                   <label htmlFor="pay-period-start" className="block text-sm font-medium text-gray-700 mb-1">
                     Pay Period Start
                   </label>
@@ -1128,10 +1132,10 @@ export default function DashboardPage() {
                     type="date"
                     value={payPeriodStart}
                     onChange={(e) => setPayPeriodStart(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
                   />
                 </div>
-                <div>
+                <div className="flex-1">
                   <label htmlFor="pay-period-end" className="block text-sm font-medium text-gray-700 mb-1">
                     Pay Period End
                   </label>
@@ -1141,17 +1145,17 @@ export default function DashboardPage() {
                     type="date"
                     value={payPeriodEnd}
                     onChange={(e) => setPayPeriodEnd(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
                   />
                 </div>
-                <div className="flex items-end space-x-2 pt-6">
+                <div className="flex items-end gap-2 pt-6 sm:pt-0">
                   <button
                     onClick={() => {
                       const start = parseISO(payPeriodStart);
                       setPayPeriodStart(format(subDays(start, 7), 'yyyy-MM-dd'));
                       setPayPeriodEnd(format(subDays(parseISO(payPeriodEnd), 7), 'yyyy-MM-dd'));
                     }}
-                    className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                    className="flex-1 sm:flex-none px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 touch-manipulation"
                   >
                     ← Previous Week
                   </button>
@@ -1161,7 +1165,7 @@ export default function DashboardPage() {
                       setPayPeriodStart(format(addDays(start, 7), 'yyyy-MM-dd'));
                       setPayPeriodEnd(format(addDays(parseISO(payPeriodEnd), 7), 'yyyy-MM-dd'));
                     }}
-                    className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                    className="flex-1 sm:flex-none px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 touch-manipulation"
                   >
                     Next Week →
                   </button>
@@ -1174,8 +1178,8 @@ export default function DashboardPage() {
         {/* Excel-like Time Entry Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           {/* Bulk Project Selector */}
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center space-x-4">
+          <div className="px-3 sm:px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <label htmlFor="bulk-project-select" className="text-sm font-medium text-gray-700 whitespace-nowrap">
                 Select Project for All Rows:
               </label>
@@ -1196,7 +1200,7 @@ export default function DashboardPage() {
                     setTimeout(() => setBulkProject(''), 100);
                   }
                 }}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white touch-manipulation"
               >
                 <option value="">Select Project</option>
                 {!projects.find(p => p.name === 'Onyx Government Services TTB') && (
@@ -1210,7 +1214,7 @@ export default function DashboardPage() {
               </select>
             </div>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -1239,9 +1243,9 @@ export default function DashboardPage() {
                       key={row.date} 
                       className={`hover:bg-gray-50 ${isWeekend ? 'bg-gray-50' : ''} ${isLocked ? 'opacity-75' : ''}`}
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
                         <div>
-                          <div>{format(parseISO(row.date), 'MMM dd, yyyy')}</div>
+                          <div className="text-xs sm:text-sm">{format(parseISO(row.date), 'MMM dd, yyyy')}</div>
                           <div className="text-xs text-gray-500">{dayOfWeek}</div>
                           {row.status && (
                             <div className="mt-1">
@@ -1260,7 +1264,7 @@ export default function DashboardPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap border-r border-gray-200">
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap border-r border-gray-200">
                         <label htmlFor={`hours-${index}`} className="sr-only">Hours for {format(parseISO(row.date), 'MMM dd, yyyy')}</label>
                         <input
                           id={`hours-${index}`}
@@ -1272,12 +1276,12 @@ export default function DashboardPage() {
                           value={row.hours}
                           onChange={(e) => updateTableCell(index, 'hours', e.target.value)}
                           disabled={isLocked}
-                          className={`w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                          className={`w-20 sm:w-24 px-2 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                           placeholder="0.00"
                           aria-label={`Hours for ${format(parseISO(row.date), 'MMM dd, yyyy')}`}
                         />
                       </td>
-                      <td className="px-4 py-3 border-r border-gray-200">
+                      <td className="px-2 sm:px-4 py-3 border-r border-gray-200">
                         <label htmlFor={`project-${index}`} className="sr-only">Project for {format(parseISO(row.date), 'MMM dd, yyyy')}</label>
                         <select
                           id={`project-${index}`}
@@ -1285,7 +1289,7 @@ export default function DashboardPage() {
                           value={row.project}
                           onChange={(e) => updateTableCell(index, 'project', e.target.value)}
                           disabled={isLocked}
-                          className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                          className={`w-full min-w-[120px] px-2 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                           required
                           aria-label={`Project for ${format(parseISO(row.date), 'MMM dd, yyyy')}`}
                         >
@@ -1301,7 +1305,7 @@ export default function DashboardPage() {
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 sm:px-4 py-3">
                         <label htmlFor={`description-${index}`} className="sr-only">Description for {format(parseISO(row.date), 'MMM dd, yyyy')}</label>
                         <input
                           id={`description-${index}`}
