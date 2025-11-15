@@ -84,6 +84,7 @@ export async function POST(req: NextRequest) {
         hours: hoursNum, // Use the parsed number (can be 0)
         project,
         description: description || '',
+        status: 'draft', // New entries default to draft status
       });
 
       return NextResponse.json({ entry }, { status: 201 });
