@@ -19,7 +19,12 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/forgot-password', {
+      // Get basePath from current location
+      const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet') 
+        ? '/nm2timesheet' 
+        : '';
+      
+      const res = await fetch(`${basePath}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

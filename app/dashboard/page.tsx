@@ -41,6 +41,14 @@ export default function DashboardPage() {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Helper to get basePath
+  const getBasePath = () => {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')) {
+      return '/nm2timesheet';
+    }
+    return '';
+  };
   const [showForm, setShowForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null);
   const [formData, setFormData] = useState({
@@ -102,11 +110,13 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     try {
-      // API routes - Next.js will handle basePath automatically
+      const basePath = getBasePath();
+      
+      // API routes - include basePath if in production
       const [userRes, entriesRes, projectsRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/time-entries'),
-        fetch('/api/projects'),
+        fetch(`${basePath}/api/auth/me`),
+        fetch(`${basePath}/api/time-entries`),
+        fetch(`${basePath}/api/projects`),
       ]);
 
       if (userRes.status === 401) {
@@ -182,11 +192,12 @@ export default function DashboardPage() {
       }
 
       // Save each entry (create or update) with better error handling
+      const basePath = getBasePath();
       const results = await Promise.allSettled(
         entriesToSave.map(async (entry) => {
           const url = entry.entryId 
-            ? `/api/time-entries/${entry.entryId}`
-            : '/api/time-entries';
+            ? `${basePath}/api/time-entries/${entry.entryId}`
+            : `${basePath}/api/time-entries`;
           
           const method = entry.entryId ? 'PUT' : 'POST';
           
@@ -248,10 +259,10 @@ export default function DashboardPage() {
     e.preventDefault();
     
     try {
-      // API routes - Next.js will handle basePath automatically
+      const basePath = getBasePath();
       const url = editingEntry 
-        ? `/api/time-entries/${editingEntry.id}`
-        : '/api/time-entries';
+        ? `${basePath}/api/time-entries/${editingEntry.id}`
+        : `${basePath}/api/time-entries`;
       
       const method = editingEntry ? 'PUT' : 'POST';
       
@@ -297,7 +308,8 @@ export default function DashboardPage() {
     if (!confirm('Are you sure you want to delete this entry?')) return;
 
     try {
-      const res = await fetch(`/api/time-entries/${id}`, {
+      const basePath = getBasePath();
+      const res = await fetch(`${basePath}/api/time-entries/${id}`, {
         method: 'DELETE',
       });
 

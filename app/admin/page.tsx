@@ -34,6 +34,14 @@ export default function AdminPage() {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'entries' | 'users'>('entries');
+  
+  // Helper to get basePath
+  const getBasePath = () => {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')) {
+      return '/nm2timesheet';
+    }
+    return '';
+  };
   const [showAddUser, setShowAddUser] = useState(false);
   const [newUser, setNewUser] = useState({
     name: '',
@@ -49,11 +57,11 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      // API routes - Next.js will handle basePath automatically
+      const basePath = getBasePath();
       const [userRes, usersRes, entriesRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/admin/users'),
-        fetch('/api/admin/time-entries'),
+        fetch(`${basePath}/api/auth/me`),
+        fetch(`${basePath}/api/admin/users`),
+        fetch(`${basePath}/api/admin/time-entries`),
       ]);
 
       if (userRes.status === 401) {
@@ -99,7 +107,8 @@ export default function AdminPage() {
     setAddingUser(true);
 
     try {
-      const res = await fetch('/api/admin/users', {
+      const basePath = getBasePath();
+      const res = await fetch(`${basePath}/api/admin/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
@@ -130,7 +139,8 @@ export default function AdminPage() {
     }
 
     try {
-      const res = await fetch(`/api/admin/time-entries/${entryId}`, {
+      const basePath = getBasePath();
+      const res = await fetch(`${basePath}/api/admin/time-entries/${entryId}`, {
         method: 'DELETE',
       });
 
@@ -155,7 +165,8 @@ export default function AdminPage() {
     }
 
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const basePath = getBasePath();
+      const res = await fetch(`${basePath}/api/admin/users/${userId}`, {
         method: 'DELETE',
       });
 

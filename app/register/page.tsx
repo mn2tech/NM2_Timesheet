@@ -21,7 +21,12 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/register', {
+      // Get basePath from current location
+      const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet') 
+        ? '/nm2timesheet' 
+        : '';
+      
+      const res = await fetch(`${basePath}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role, adminCode: role === 'admin' ? adminCode : undefined }),
