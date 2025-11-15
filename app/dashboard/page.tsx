@@ -565,7 +565,7 @@ export default function DashboardPage() {
         
         // Also update table rows immediately
         setTableRows(prevRows => {
-          const updatedRows = prevRows.map(row => {
+          const updatedRows: TableRow[] = prevRows.map(row => {
             // If this row was deleted, clear it
             if (row.entryId && deletedEntryIds.includes(row.entryId)) {
               console.log(`Clearing table row for ${row.date} (entry deleted)`);
@@ -575,7 +575,7 @@ export default function DashboardPage() {
                 project: '',
                 description: '',
                 entryId: undefined,
-                status: 'draft',
+                status: 'draft' as const,
               };
             }
             
@@ -589,13 +589,14 @@ export default function DashboardPage() {
               console.log(`Updating table row for ${row.date} with saved entry:`, { hours: savedEntry.hours, project: savedEntry.project, id: savedEntry.id, status: savedEntry.status });
               // Note: Rejected and submitted entries that are saved will automatically become 'draft' status
               // This allows users to fix and resubmit rejected/submitted entries
+              const entryStatus = savedEntry.status as 'draft' | 'submitted' | 'approved' | 'rejected' | undefined;
               return {
                 ...row,
                 hours: savedEntry.hours.toString(),
                 project: savedEntry.project,
                 description: savedEntry.description,
                 entryId: String(savedEntry.id),
-                status: savedEntry.status || 'draft',
+                status: entryStatus || 'draft',
               };
             }
             
