@@ -985,7 +985,7 @@ export default function DashboardPage() {
               <NM2TechLogo size="sm" />
               <p className="text-xs text-gray-500 mt-1 hidden sm:block">Timesheet Dashboard</p>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center justify-end space-x-2 sm:space-x-4">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
@@ -995,10 +995,11 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                className="flex items-center justify-center space-x-1 sm:space-x-2 px-2.5 sm:px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation min-w-[44px] sm:min-w-0"
                 title="Logout"
+                aria-label="Logout"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 sm:w-4 sm:h-4 flex-shrink-0" />
                 <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
