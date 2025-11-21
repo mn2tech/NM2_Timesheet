@@ -1133,7 +1133,7 @@ export default function DashboardPage() {
                     type="date"
                     value={payPeriodStart}
                     onChange={(e) => setPayPeriodStart(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
+                    className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
                   />
                 </div>
                 <div className="flex-1">
@@ -1146,7 +1146,7 @@ export default function DashboardPage() {
                     type="date"
                     value={payPeriodEnd}
                     onChange={(e) => setPayPeriodEnd(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
+                    className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
                   />
                 </div>
                 <div className="flex items-end gap-2 pt-6 sm:pt-0">
@@ -1201,7 +1201,7 @@ export default function DashboardPage() {
                     setTimeout(() => setBulkProject(''), 100);
                   }
                 }}
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white touch-manipulation"
+                className="flex-1 px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation"
               >
                 <option value="">Select Project</option>
                 {!projects.find(p => p.name === 'Onyx Government Services TTB') && (
@@ -1277,7 +1277,7 @@ export default function DashboardPage() {
                           value={row.hours}
                           onChange={(e) => updateTableCell(index, 'hours', e.target.value)}
                           disabled={isLocked}
-                          className={`w-20 sm:w-24 px-2 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                          className={`w-20 sm:w-24 px-2 py-2 text-sm text-gray-900 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                           placeholder="0.00"
                           aria-label={`Hours for ${format(parseISO(row.date), 'MMM dd, yyyy')}`}
                         />
@@ -1290,7 +1290,7 @@ export default function DashboardPage() {
                           value={row.project}
                           onChange={(e) => updateTableCell(index, 'project', e.target.value)}
                           disabled={isLocked}
-                          className={`w-full min-w-[120px] px-2 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                          className={`w-full min-w-[120px] px-2 py-2 text-sm text-gray-900 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white touch-manipulation ${isLocked ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
                           required
                           aria-label={`Project for ${format(parseISO(row.date), 'MMM dd, yyyy')}`}
                         >
@@ -1315,7 +1315,7 @@ export default function DashboardPage() {
                           value={row.description}
                           onChange={(e) => updateTableCell(index, 'description', e.target.value)}
                           disabled={isLocked}
-                          className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                          className={`w-full px-2 py-1 text-sm text-gray-900 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isLocked ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                           placeholder="What did you work on?"
                           aria-label={`Description for ${format(parseISO(row.date), 'MMM dd, yyyy')}`}
                         />
