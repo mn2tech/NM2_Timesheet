@@ -1,0 +1,60 @@
+{
+  "packageId": "com.nm2tech_sas.twa",
+  "host": "nm2tech-sas.com",
+  "name": "NM2Timesheet",
+  "launcherName": "Timesheet",
+  "display": "standalone",
+  "themeColor": "#2563EB",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#FFFFFF",
+  "enableNotifications": true,
+  "startUrl": "/nm2timesheet/",
+  "iconUrl": "https://nm2tech-sas.com/nm2timesheet/icon-512.png",
+  "maskableIconUrl": "https://nm2tech-sas.com/nm2timesheet/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\Users\\kolaw\\Projects\\NM2TimesheetApp\\android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "2.1",
+  "appVersionCode": 3,
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "shortName": "Dashboard",
+      "url": "https://nm2tech-sas.com/nm2timesheet/dashboard",
+      "chosenIconUrl": "https://nm2tech-sas.com/nm2timesheet/icon-192.png"
+    },
+    {
+      "name": "Login",
+      "shortName": "Login",
+      "url": "https://nm2tech-sas.com/nm2timesheet/login",
+      "chosenIconUrl": "https://nm2tech-sas.com/nm2timesheet/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://nm2tech-sas.com/nm2timesheet/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://nm2tech-sas.com/nm2timesheet/",
+  "minSdkVersion": 21,
+  "orientation": "portrait-primary",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "2.1"
+}
