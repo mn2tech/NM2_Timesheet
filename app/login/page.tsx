@@ -36,15 +36,19 @@ export default function LoginPage() {
 
       console.log('Login response status:', res.status, res.statusText);
 
+      // Read response as text first (can only read body once)
+      const responseText = await res.text();
+      console.log('Login response text:', responseText.substring(0, 200));
+
       let data;
       try {
-        data = await res.json();
+        // Try to parse as JSON
+        data = JSON.parse(responseText);
         console.log('Login response data:', data);
       } catch (parseError) {
-        // If response is not JSON, show a more helpful error
-        const text = await res.text();
-        console.error('Failed to parse JSON response:', text);
-        setError(`Server error: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`);
+        // If response is not JSON, show the raw text
+        console.error('Failed to parse JSON response:', responseText);
+        setError(`Server error: ${res.status} ${res.statusText}. Response: ${responseText.substring(0, 100)}`);
         setLoading(false);
         return;
       }
