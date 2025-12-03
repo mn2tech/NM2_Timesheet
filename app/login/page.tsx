@@ -18,45 +18,51 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Get basePath from current location - use absolute URL to ensure correct path
-      let apiUrl = '/api/auth/login';
-      if (typeof window !== 'undefined') {
-        const pathname = window.location.pathname;
-        const href = window.location.href;
-        // Check both pathname and href to be sure
-        if (pathname.startsWith('/nm2timesheet') || href.includes('/nm2timesheet')) {
-          apiUrl = '/nm2timesheet/api/auth/login';
-          console.log('Using basePath /nm2timesheet for API call:', apiUrl);
-        } else {
-          console.log('No basePath detected. Pathname:', pathname, 'Href:', href);
-        }
-      }
+      // Use absolute URL based on current origin - Next.js will handle basePath automatically
+      // This works for both local dev (no basePath) and production (with basePath)
+      const apiUrl = typeof window !== 'undefined' 
+        ? `${window.location.origin}/api/auth/login`
+        : '/api/auth/login';
       
-      // API route - include basePath if in production
+      console.log('Attempting login with API URL:', apiUrl);
+      console.log('Current location:', typeof window !== 'undefined' ? window.location.href : 'server');
+      
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Include cookies for CORS
       });
+
+      console.log('Login response status:', res.status, res.statusText);
 
       let data;
       try {
         data = await res.json();
+        console.log('Login response data:', data);
       } catch (parseError) {
         // If response is not JSON, show a more helpful error
-        setError(`Server error: ${res.status} ${res.statusText}. Please try again.`);
+        const text = await res.text();
+        console.error('Failed to parse JSON response:', text);
+        setError(`Server error: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`);
         setLoading(false);
         return;
       }
 
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        console.error('Login failed:', data);
+        setError(data.error || `Login failed: ${res.status} ${res.statusText}`);
         setLoading(false);
         return;
       }
 
-      // Set cookie and redirect
-      document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      // Set cookie with correct path (works with or without basePath)
+      const cookiePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')
+        ? '/nm2timesheet'
+        : '/';
+      document.cookie = `token=${data.token}; path=${cookiePath}; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      
+      // Redirect to dashboard (Next.js router handles basePath automatically)
       router.push('/dashboard');
     } catch (err) {
       // More specific error handling
