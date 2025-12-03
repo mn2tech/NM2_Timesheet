@@ -12,20 +12,30 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Helper to get basePath (same as dashboard)
+  const getBasePath = () => {
+    if (typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/nm2timesheet')) {
+        return '/nm2timesheet';
+      }
+    }
+    return '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Use absolute URL based on current origin - Next.js will handle basePath automatically
-      // This works for both local dev (no basePath) and production (with basePath)
-      const apiUrl = typeof window !== 'undefined' 
-        ? `${window.location.origin}/api/auth/login`
-        : '/api/auth/login';
+      // Get basePath and construct API URL (same pattern as dashboard)
+      const basePath = getBasePath();
+      const apiUrl = `${basePath}/api/auth/login`;
       
       console.log('Attempting login with API URL:', apiUrl);
       console.log('Current location:', typeof window !== 'undefined' ? window.location.href : 'server');
+      console.log('Detected basePath:', basePath);
       
       const res = await fetch(apiUrl, {
         method: 'POST',
