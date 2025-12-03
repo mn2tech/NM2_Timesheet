@@ -802,7 +802,13 @@ export default function DashboardPage() {
   };
 
   const handleLogout = () => {
-    document.cookie = 'token=; path=/; max-age=0';
+    // Clear cookie with both possible paths (basePath and root)
+    const cookiePath = getBasePath() || '/';
+    // Clear with basePath path
+    document.cookie = `token=; path=${cookiePath}; max-age=0; SameSite=Lax`;
+    // Also clear with root path as fallback
+    document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
+    // Redirect to home (Next.js router handles basePath automatically)
     router.push('/');
   };
 
