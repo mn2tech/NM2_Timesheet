@@ -2,7 +2,7 @@
   "packageId": "com.nm2tech_sas.twa",
   "host": "nm2tech-sas.com",
   "name": "NM2Timesheet",
-  "launcherName": "Timesheet",
+  "launcherName": "NM2Timesheet",
   "display": "standalone",
   "themeColor": "#2563EB",
   "themeColorDark": "#000000",
@@ -20,8 +20,8 @@
     "path": "C:\\Users\\kolaw\\Projects\\NM2TimesheetApp\\android.keystore",
     "alias": "android"
   },
-  "appVersionName": "2.1",
-  "appVersionCode": 3,
+  "appVersionName": "2.2",
+  "appVersionCode": 6,
   "shortcuts": [
     {
       "name": "Dashboard",
@@ -56,5 +56,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "2.1"
+  "appVersion": "2.2"
 }
