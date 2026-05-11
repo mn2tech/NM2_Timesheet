@@ -56,18 +56,15 @@ export default function RegisterPage() {
       document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/dashboard');
     } catch (err) {
-      // More specific error handling
       console.error('Registration error:', err);
       let errorMessage = 'An error occurred. Please try again.';
-      
       if (err instanceof Error) {
         errorMessage = `Network error: ${err.message}`;
       } else if (err && typeof err === 'object' && 'message' in err) {
-        errorMessage = `Error: ${String(err.message)}`;
+        errorMessage = `Error: ${String((err as { message: unknown }).message)}`;
       } else if (err) {
         errorMessage = `Error: ${String(err)}`;
       }
-      
       setError(errorMessage);
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NM2TechLogo from '@/components/NM2TechLogo';
+import { getSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,8 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Helper to get basePath (same as dashboard)
   const getBasePath = () => {
     if (typeof window !== 'undefined') {
       const pathname = window.location.pathname;
@@ -29,70 +30,72 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Get basePath and construct API URL (same pattern as dashboard)
       const basePath = getBasePath();
       const apiUrl = `${basePath}/api/auth/login`;
-      
-      console.log('Attempting login with API URL:', apiUrl);
-      console.log('Current location:', typeof window !== 'undefined' ? window.location.href : 'server');
-      console.log('Detected basePath:', basePath);
-      
+
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // Include cookies for CORS
+        credentials: 'include',
       });
 
-      console.log('Login response status:', res.status, res.statusText);
-
-      // Read response as text first (can only read body once)
       const responseText = await res.text();
-      console.log('Login response text:', responseText.substring(0, 200));
-
-      let data;
+      let data: { token?: string; error?: string };
       try {
-        // Try to parse as JSON
         data = JSON.parse(responseText);
-        console.log('Login response data:', data);
-      } catch (parseError) {
-        // If response is not JSON, show the raw text
-        console.error('Failed to parse JSON response:', responseText);
+      } catch {
         setError(`Server error: ${res.status} ${res.statusText}. Response: ${responseText.substring(0, 100)}`);
-        setLoading(false);
         return;
       }
 
       if (!res.ok) {
-        console.error('Login failed:', data);
         setError(data.error || `Login failed: ${res.status} ${res.statusText}`);
-        setLoading(false);
         return;
       }
 
-      // Set cookie with correct path (works with or without basePath)
-      const cookiePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')
-        ? '/nm2timesheet'
-        : '/';
+      if (!data.token) {
+        setError('Login failed: no token received');
+        return;
+      }
+
+      const cookiePath =
+        typeof window !== 'undefined' && window.location.pathname.startsWith('/nm2timesheet')
+          ? '/nm2timesheet'
+          : '/';
       document.cookie = `token=${data.token}; path=${cookiePath}; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-      
-      // Redirect to dashboard (Next.js router handles basePath automatically)
+
       router.push('/dashboard');
     } catch (err) {
-      // More specific error handling
       console.error('Login error:', err);
       let errorMessage = 'An error occurred. Please try again.';
-      
-      if (err instanceof Error) {
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        errorMessage = 'Network error: Unable to connect to server. Please check your connection.';
+      } else if (err instanceof Error) {
         errorMessage = `Network error: ${err.message}`;
-      } else if (err && typeof err === 'object' && 'message' in err) {
-        errorMessage = `Error: ${String(err.message)}`;
-      } else if (err) {
-        errorMessage = `Error: ${String(err)}`;
       }
-      
       setError(errorMessage);
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError('');
+      setGoogleLoading(true);
+      const supabase = getSupabaseBrowserClient();
+      const basePath = getBasePath();
+      const redirectTo = `${window.location.origin}${basePath}/auth/callback?next=${encodeURIComponent('/dashboard')}`;
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      });
+      if (oauthError) throw oauthError;
+    } catch (err) {
+      console.error('Google sign-in error:', err);
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
+      setGoogleLoading(false);
     }
   };
 
@@ -154,6 +157,27 @@ export default function LoginPage() {
           </button>
         </form>
 
+        <div className="my-4 flex items-center" aria-hidden="true">
+          <div className="flex-1 border-t border-gray-200" />
+          <span className="px-3 text-xs uppercase tracking-wide text-gray-400">Or</span>
+          <div className="flex-1 border-t border-gray-200" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={googleLoading || loading}
+          className="w-full flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-800 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#EA4335"
+              d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.8-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 3.9 1.5l2.6-2.5C16.8 2.9 14.6 2 12 2 6.9 2 2.8 6.3 2.8 11.6S6.9 21.2 12 21.2c6.9 0 9.2-4.9 9.2-7.4 0-.5 0-.9-.1-1.3H12z"
+            />
+          </svg>
+          {googleLoading ? 'Redirecting to Google...' : 'Continue with Google'}
+        </button>
+
         <div className="mt-6 text-center space-y-2">
           <div>
             <Link href="/forgot-password" className="text-primary-600 hover:text-primary-700 text-sm">
@@ -179,5 +203,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-

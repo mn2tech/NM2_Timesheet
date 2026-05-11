@@ -8,8 +8,16 @@ import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-// Load environment variables from .env.local FIRST
-config({ path: resolve(process.cwd(), '.env.local') });
+// Load environment variables - try .env.local first, then .env.production
+const envLocal = resolve(process.cwd(), '.env.local');
+const envProduction = resolve(process.cwd(), '.env.production');
+const fs = require('fs');
+
+if (fs.existsSync(envLocal)) {
+  config({ path: envLocal });
+} else if (fs.existsSync(envProduction)) {
+  config({ path: envProduction });
+}
 
 // Now import supabase after env vars are loaded
 const { supabase } = require('../lib/supabase');
