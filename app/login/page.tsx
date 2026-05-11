@@ -86,7 +86,14 @@ export default function LoginPage() {
       setGoogleLoading(true);
       const supabase = getSupabaseBrowserClient();
       const basePath = getBasePath();
-      const redirectTo = `${window.location.origin}${basePath}/auth/callback?next=${encodeURIComponent('/dashboard')}`;
+      // Supabase returns ?code=&state= and drops other query params. Same Supabase + another app on :3000
+      // can also steal the redirect. Persist target in this tab only.
+      try {
+        sessionStorage.setItem('timesheet_oauth_post_login', '/dashboard');
+      } catch (_) {
+        // ignore
+      }
+      const redirectTo = `${window.location.origin}${basePath}/auth/callback`;
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo },

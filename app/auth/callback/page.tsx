@@ -14,9 +14,31 @@ function getBasePath(): string {
 
 function normalizeNextPath(nextPath: string | null): string {
   if (!nextPath) return '/dashboard';
-  const decoded = decodeURIComponent(nextPath);
-  if (!decoded.startsWith('/') || decoded.startsWith('//')) return '/dashboard';
-  return decoded;
+  try {
+    const decoded = decodeURIComponent(nextPath);
+    if (!decoded.startsWith('/') || decoded.startsWith('//')) return '/dashboard';
+    return decoded;
+  } catch {
+    if (!nextPath.startsWith('/') || nextPath.startsWith('//')) return '/dashboard';
+    return nextPath;
+  }
+}
+
+function readPostLoginTarget(searchParams: ReturnType<typeof useSearchParams>): string {
+  const rawNext = searchParams.get('next');
+  if (rawNext) {
+    return normalizeNextPath(rawNext);
+  }
+  try {
+    const stored = sessionStorage.getItem('timesheet_oauth_post_login');
+    if (stored && stored.startsWith('/') && !stored.startsWith('//')) {
+      sessionStorage.removeItem('timesheet_oauth_post_login');
+      return stored;
+    }
+  } catch (_) {
+    // ignore
+  }
+  return '/dashboard';
 }
 
 function AuthCallbackInner() {
@@ -24,7 +46,7 @@ function AuthCallbackInner() {
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
 
-  const nextPath = useMemo(() => normalizeNextPath(searchParams.get('next')), [searchParams]);
+  const nextPath = useMemo(() => readPostLoginTarget(searchParams), [searchParams]);
 
   useEffect(() => {
     let alive = true;
@@ -34,7 +56,9 @@ function AuthCallbackInner() {
         const supabase = getSupabaseBrowserClient();
         const code = searchParams.get('code');
         if (code) {
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(
+            typeof window !== 'undefined' ? window.location.href : code
+          );
           if (exchangeError) throw exchangeError;
         }
 
