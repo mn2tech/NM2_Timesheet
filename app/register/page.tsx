@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NM2TechLogo from '@/components/NM2TechLogo';
+import GoogleOAuthButton from '@/components/GoogleOAuthButton';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -180,6 +181,18 @@ export default function RegisterPage() {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
+
+        <div className="my-4 flex items-center" aria-hidden="true">
+          <div className="flex-1 border-t border-gray-200" />
+          <span className="px-3 text-xs uppercase tracking-wide text-gray-400">Or</span>
+          <div className="flex-1 border-t border-gray-200" />
+        </div>
+
+        <GoogleOAuthButton
+          disabled={loading}
+          onStart={() => setError('')}
+          onError={(msg) => setError(msg)}
+        />
 
         <div className="mt-6 text-center">
           <Link href="/login" className="text-primary-600 hover:text-primary-700 text-sm">

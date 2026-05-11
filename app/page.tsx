@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NM2TechLogo from '@/components/NM2TechLogo';
+import GoogleOAuthButton from '@/components/GoogleOAuthButton';
 
 export default function Home() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [oauthError, setOauthError] = useState('');
 
   useEffect(() => {
     // Check if user is authenticated
@@ -33,7 +35,21 @@ export default function Home() {
           </div>
           <p className="text-gray-600 mt-2">Timesheet Management System</p>
         </div>
-        
+
+        {oauthError && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+            {oauthError}
+          </div>
+        )}
+
+        <GoogleOAuthButton onStart={() => setOauthError('')} onError={(msg) => setOauthError(msg)} />
+
+        <div className="my-4 flex items-center" aria-hidden="true">
+          <div className="flex-1 border-t border-gray-200" />
+          <span className="px-3 text-xs uppercase tracking-wide text-gray-400">Or</span>
+          <div className="flex-1 border-t border-gray-200" />
+        </div>
+
         <div className="space-y-4">
           <Link
             href="/login"

@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import NM2TechLogo from '@/components/NM2TechLogo';
-import { getSupabaseBrowserClient } from '@/lib/supabase-browser';
+import GoogleOAuthButton from '@/components/GoogleOAuthButton';
+import { getTimesheetBasePath } from '@/lib/timesheet-base-path';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,17 +13,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-
-  const getBasePath = () => {
-    if (typeof window !== 'undefined') {
-      const pathname = window.location.pathname;
-      if (pathname.startsWith('/nm2timesheet')) {
-        return '/nm2timesheet';
-      }
-    }
-    return '';
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const basePath = getBasePath();
+      const basePath = getTimesheetBasePath();
       const apiUrl = `${basePath}/api/auth/login`;
 
       const res = await fetch(apiUrl, {
@@ -77,32 +67,6 @@ export default function LoginPage() {
       setError(errorMessage);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setError('');
-      setGoogleLoading(true);
-      const supabase = getSupabaseBrowserClient();
-      const basePath = getBasePath();
-      // Supabase returns ?code=&state= and drops other query params. Same Supabase + another app on :3000
-      // can also steal the redirect. Persist target in this tab only.
-      try {
-        sessionStorage.setItem('timesheet_oauth_post_login', '/dashboard');
-      } catch (_) {
-        // ignore
-      }
-      const redirectTo = `${window.location.origin}${basePath}/auth/callback`;
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo },
-      });
-      if (oauthError) throw oauthError;
-    } catch (err) {
-      console.error('Google sign-in error:', err);
-      setError(err instanceof Error ? err.message : 'Google sign-in failed');
-      setGoogleLoading(false);
     }
   };
 
@@ -170,20 +134,11 @@ export default function LoginPage() {
           <div className="flex-1 border-t border-gray-200" />
         </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={googleLoading || loading}
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-800 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              fill="#EA4335"
-              d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.8-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 3.9 1.5l2.6-2.5C16.8 2.9 14.6 2 12 2 6.9 2 2.8 6.3 2.8 11.6S6.9 21.2 12 21.2c6.9 0 9.2-4.9 9.2-7.4 0-.5 0-.9-.1-1.3H12z"
-            />
-          </svg>
-          {googleLoading ? 'Redirecting to Google...' : 'Continue with Google'}
-        </button>
+        <GoogleOAuthButton
+          disabled={loading}
+          onStart={() => setError('')}
+          onError={(msg) => setError(msg)}
+        />
 
         <div className="mt-6 text-center space-y-2">
           <div>
