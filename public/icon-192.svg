@@ -1,0 +1,22 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon: Modern tech symbol with "2" integrated -->
+  <g>
+    <!-- Outer square with rounded corners - represents tech/innovation -->
+    <rect
+      x="4"
+      y="4"
+      width="24"
+      height="24"
+      rx="3"
+      fill="#2563eb"
+    />
+    
+    <!-- Inner "2" shape - modern geometric design -->
+    <path
+      d="M 7 10 L 20 10 L 20 13 L 10 13 L 10 15 L 20 15 L 20 22 L 7 22 L 7 19 L 17 19 L 17 17 L 7 17 Z"
+      fill="white"
+    />
+  </g>
+</svg>
+
+

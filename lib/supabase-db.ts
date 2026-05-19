@@ -1,12 +1,8 @@
-import { supabase, supabaseAdmin } from './supabase';
+import { getServerSupabase } from './supabase';
 import { User, TimeEntry, Project } from './db';
 
-// Helper to check if Supabase is available
-function ensureSupabase() {
-  if (!supabase) {
-    throw new Error('Supabase client is not initialized. Check your environment variables.');
-  }
-  return supabase;
+function dbClient() {
+  return getServerSupabase();
 }
 
 // Convert Supabase row to User
@@ -48,7 +44,7 @@ function rowToProject(row: any): Project {
 export const supabaseDb = {
   users: {
     findById: async (id: string): Promise<User | undefined> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_users')
         .select('*')
@@ -59,7 +55,7 @@ export const supabaseDb = {
       return rowToUser(data);
     },
     findByEmail: async (email: string): Promise<User | undefined> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_users')
         .select('*')
@@ -70,7 +66,7 @@ export const supabaseDb = {
       return rowToUser(data);
     },
     create: async (user: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       // Generate ID (using timestamp like JSON version for consistency)
       const id = Date.now().toString();
       const { data, error } = await client
@@ -89,7 +85,7 @@ export const supabaseDb = {
       return rowToUser(data);
     },
     getAll: async (): Promise<User[]> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_users')
         .select('*')
@@ -99,7 +95,7 @@ export const supabaseDb = {
       return (data || []).map(rowToUser);
     },
     delete: async (id: string): Promise<boolean> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { error } = await client
         .from('timesheet_users')
         .delete()
@@ -108,7 +104,7 @@ export const supabaseDb = {
       return !error;
     },
     update: async (id: string, updates: Partial<User>): Promise<User | null> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const updateData: any = {};
       
       if (updates.email) updateData.email = updates.email;
@@ -129,7 +125,7 @@ export const supabaseDb = {
   },
   timeEntries: {
     findByUserId: async (userId: string): Promise<TimeEntry[]> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_time_entries')
         .select('*')
@@ -140,7 +136,7 @@ export const supabaseDb = {
       return (data || []).map(rowToTimeEntry);
     },
     findById: async (id: string): Promise<TimeEntry | undefined> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_time_entries')
         .select('*')
@@ -152,7 +148,7 @@ export const supabaseDb = {
     },
     create: async (entry: Omit<TimeEntry, 'id' | 'createdAt'>): Promise<TimeEntry> => {
       try {
-        const client = ensureSupabase();
+        const client = dbClient();
         // Generate ID (using timestamp like JSON version for consistency)
         const id = Date.now().toString();
         const { data, error } = await client
@@ -198,7 +194,7 @@ export const supabaseDb = {
       // Always update status if provided (even if it's an empty string, we want to allow setting it)
       if (updates.status !== undefined) updateData.status = updates.status;
 
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_time_entries')
         .update(updateData)
@@ -218,16 +214,16 @@ export const supabaseDb = {
       return rowToTimeEntry(data);
     },
     delete: async (id: string): Promise<boolean> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { error } = await client
-        .from('time_entries')
+        .from('timesheet_time_entries')
         .delete()
         .eq('id', id);
 
       return !error;
     },
     getAll: async (): Promise<TimeEntry[]> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_time_entries')
         .select('*')
@@ -239,7 +235,7 @@ export const supabaseDb = {
   },
   projects: {
     getAll: async (): Promise<Project[]> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_projects')
         .select('*')
@@ -249,7 +245,7 @@ export const supabaseDb = {
       return (data || []).map(rowToProject);
     },
     findById: async (id: string): Promise<Project | undefined> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_projects')
         .select('*')
@@ -260,7 +256,7 @@ export const supabaseDb = {
       return rowToProject(data);
     },
     create: async (project: Omit<Project, 'id' | 'createdAt'>): Promise<Project> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       // Generate ID (using timestamp like JSON version for consistency)
       const id = Date.now().toString();
       const { data, error } = await client
@@ -279,7 +275,7 @@ export const supabaseDb = {
   },
   userLogins: {
     create: async (userId: string, email: string, ipAddress?: string, userAgent?: string): Promise<void> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { error } = await client
         .from('timesheet_user_logins')
         .insert({
@@ -295,7 +291,7 @@ export const supabaseDb = {
       }
     },
     findByUserId: async (userId: string, limit: number = 50): Promise<any[]> => {
-      const client = ensureSupabase();
+      const client = dbClient();
       const { data, error } = await client
         .from('timesheet_user_logins')
         .select('*')
