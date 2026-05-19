@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Access token is required' }, { status: 400 });
     }
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!process.env['SUPABASE_SERVICE_ROLE_KEY']) {
       return NextResponse.json(
         {
           error:

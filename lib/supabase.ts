@@ -1,10 +1,13 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Bracket access so Next.js does not inline undefined at build time when the key is added later.
+function env(name: string): string | undefined {
+  return process.env[name];
+}
 
-// Create clients only if environment variables are available
-// This allows the app to work even if Supabase is not fully configured
+const supabaseUrl = env('NEXT_PUBLIC_SUPABASE_URL');
+const supabaseAnonKey = env('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+
 let supabase: SupabaseClient | null = null;
 let supabaseAdmin: SupabaseClient | null = null;
 
@@ -16,38 +19,44 @@ if (supabaseUrl && supabaseAnonKey) {
         autoRefreshToken: false,
       },
     });
-
-    // Service role bypasses RLS — required for server API routes (custom JWT auth, not Supabase sessions)
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (serviceRoleKey) {
-      supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      });
-    } else {
-      console.warn(
-        'SUPABASE_SERVICE_ROLE_KEY is not set. Server login and DB operations will fail when RLS is enabled.'
-      );
-    }
   } catch (error) {
-    console.error('Failed to initialize Supabase client:', error);
+    console.error('Failed to initialize Supabase anon client:', error);
   }
 } else {
   console.warn('Supabase environment variables not set. Using JSON file storage.');
 }
 
+function getOrCreateAdminClient(): SupabaseClient | null {
+  if (supabaseAdmin) return supabaseAdmin;
+
+  const url = env('NEXT_PUBLIC_SUPABASE_URL');
+  const serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
+
+  if (!url || !serviceRoleKey) {
+    return null;
+  }
+
+  supabaseAdmin = createClient(url, serviceRoleKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return supabaseAdmin;
+}
+
 /** Server-side DB client. Uses service role to bypass RLS (app auth is custom JWT, not Supabase Auth). */
 export function getServerSupabase(): SupabaseClient {
-  if (supabaseAdmin) {
-    return supabaseAdmin;
+  const admin = getOrCreateAdminClient();
+  if (admin) {
+    return admin;
   }
 
   const isProduction = process.env.NODE_ENV === 'production';
-  if (isProduction || process.env.REQUIRE_SERVICE_ROLE_KEY === 'true') {
+  if (isProduction || env('REQUIRE_SERVICE_ROLE_KEY') === 'true') {
     throw new Error(
-      'SUPABASE_SERVICE_ROLE_KEY is not set on the server. Add it to .env and restart PM2. Required when RLS is enabled.'
+      'SUPABASE_SERVICE_ROLE_KEY is not set on the server. Add it to .env, run npm run build, and restart PM2.'
     );
   }
 
@@ -64,5 +73,3 @@ export function getServerSupabase(): SupabaseClient {
 }
 
 export { supabase, supabaseAdmin };
-
-
