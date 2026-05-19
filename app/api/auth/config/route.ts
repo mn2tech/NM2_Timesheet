@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import fs from 'fs';
 import path from 'path';
 import { NextResponse } from 'next/server';
+import { getRuntimeEnv } from '@/lib/runtime-env';
 
 function envFileHasKey(key: string): boolean {
   const root = process.cwd();
@@ -24,13 +25,13 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     cwd: process.cwd(),
-    hasSupabaseUrl: !!process.env['NEXT_PUBLIC_SUPABASE_URL'],
-    hasAnonKey: !!process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'],
-    hasServiceRoleKey: !!process.env['SUPABASE_SERVICE_ROLE_KEY'],
+    hasSupabaseUrl: !!getRuntimeEnv('NEXT_PUBLIC_SUPABASE_URL'),
+    hasAnonKey: !!getRuntimeEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    hasServiceRoleKey: !!getRuntimeEnv('SUPABASE_SERVICE_ROLE_KEY'),
     envFileHasServiceRoleKey: envFileHasKey('SUPABASE_SERVICE_ROLE_KEY'),
-    hasJwtSecret: !!process.env['JWT_SECRET'],
+    hasJwtSecret: !!getRuntimeEnv('JWT_SECRET'),
     envFileHasJwtSecret: envFileHasKey('JWT_SECRET'),
     nodeEnv: process.env.NODE_ENV ?? 'unknown',
-    googleRouteVersion: 'email-lookup-v3-load-env',
+    googleRouteVersion: 'email-lookup-v4-runtime-env',
   });
 }

@@ -1,8 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { getRuntimeEnv } from '@/lib/runtime-env';
 
-// Bracket access so Next.js does not inline undefined at build time when the key is added later.
 function env(name: string): string | undefined {
-  return process.env[name];
+  return getRuntimeEnv(name);
 }
 
 const supabaseUrl = env('NEXT_PUBLIC_SUPABASE_URL');

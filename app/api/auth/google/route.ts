@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import { db } from '@/lib/db-wrapper';
 import { generateToken, hashPassword } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase';
+import { getRuntimeEnv } from '@/lib/runtime-env';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Access token is required' }, { status: 400 });
     }
 
-    if (!process.env['SUPABASE_SERVICE_ROLE_KEY']) {
+    if (!getRuntimeEnv('SUPABASE_SERVICE_ROLE_KEY')) {
       return NextResponse.json(
         {
           error:
